@@ -1,0 +1,27 @@
+//
+//  Chat.swift
+//  OpenChat
+//
+//  Created by Giuseppe Rocco on 22/03/26.
+//
+
+import Foundation
+
+struct Chat: Identifiable, Codable, Hashable {
+    let id: UUID
+    var title: String
+    var messages: [Message]
+    var createdAt: Date
+    
+    init(
+        id: UUID = UUID(),
+        title: String = "New Chat",
+        messages: [Message] = [],
+        createdAt: Date = .now,
+    ) {
+        self.id = id
+        self.title = title
+        self.messages = messages
+        self.createdAt = createdAt
+    }
+}
