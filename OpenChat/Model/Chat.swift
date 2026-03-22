@@ -7,12 +7,14 @@
 
 import Foundation
 
+@Observable
 final class Chat: Identifiable, Codable {
     
     let id: UUID
     var title: String
     var messages: [Message]
     var createdAt: Date
+    var model: Model?
     
     init(
         id: UUID = UUID(),

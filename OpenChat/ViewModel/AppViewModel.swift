@@ -10,50 +10,42 @@ import Observation
 
 @MainActor @Observable
 final class AppViewModel {
-    
-    private var service: OpenAIService?
-    
+            
     private(set) var models: [Model] = []
     private(set) var chats: [Chat] = []
     private(set) var isAuthenticated: Bool = false
     private(set) var webLoginURL: URL? = nil
     
     private(set) var endpoint: EndpointConfiguration?
+        
+    var isConfigured: Bool { endpoint != nil }
     
-    var selectedChat: Chat?
-    
-    var isConfigured: Bool {
-        endpoint != nil
-    }
-    
-    var isReady: Bool {
-        endpoint != nil && isAuthenticated
-    }
+    var isReady: Bool { endpoint != nil && isAuthenticated }
     
     func setEndpoint(_ endpoint: EndpointConfiguration) {
         self.endpoint = endpoint
-        self.service = .init(endpoint: endpoint)
     }
     
-    func createChat() {
-        chats.insert(Chat(), at: 0)
-        selectedChat = chats.first
+    func createChat() -> Chat {
+        let newChat = Chat()
+        chats.insert(newChat, at: 0)
+        return newChat
     }
     
     func fetchModels() async throws {
-        guard let service else { return }
+        guard let endpoint else { return }
         
-        self.models = try await service.fetchModels()
+        self.models = try await OpenAIService(endpoint).fetchModels()
     }
     
     func initiateAuthFlow() async throws {
-        guard let service else { return }
+        guard let endpoint else { return }
             
         do {
-            try await service.testConnection()
+            try await OpenAIService(endpoint).testConnection()
             isAuthenticated = true
             webLoginURL = nil
-        } catch OpenAIService.Error.unauthorized(let url) {
+        } catch OpenAIError.unauthorized(let url) {
             webLoginURL = url
         }
     }

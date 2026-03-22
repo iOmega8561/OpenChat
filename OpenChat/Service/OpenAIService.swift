@@ -9,37 +9,9 @@ import Foundation
 
 struct OpenAIService: Sendable {
     
-    enum Error: Swift.Error {
-        case unauthorized(redirectUrl: URL?)
-        case invalidResponse
-        case badRequest
-    }
-    
-    let endpoint: EndpointConfiguration
+    private let endpoint: EndpointConfiguration
     
     private let session = SessionManager.shared.session
-    
-    private func detectError(from response: URLResponse) throws {
-        guard let http = response as? HTTPURLResponse else {
-            throw Error.invalidResponse
-        }
-        
-        switch http.statusCode {
-        case 401:
-            throw Error.unauthorized(redirectUrl: nil)
-            
-        case 400:
-            throw Error.badRequest
-            
-        case 300...399:
-            if let location = http.value(forHTTPHeaderField: "Location") {
-                throw Error.unauthorized(redirectUrl: URL(string: location))
-            }
-            
-            throw Error.invalidResponse
-        default: return
-        }
-    }
     
     func performRequest<
         RequestType: Encodable,
@@ -51,18 +23,16 @@ struct OpenAIService: Sendable {
             session: session
         )
         
-        try detectError(from: response)
-        
+        try OpenAIError.detectError(from: response)
+                
         do {
             return try JSONDecoder().decode(ResponseType.self, from: data)
         } catch {
-            throw Error.invalidResponse
+            throw OpenAIError.invalidResponse
         }
     }
     
-    func testConnection() async throws {
-        _ = try await fetchModels()
-    }
+    func testConnection() async throws { _ = try await fetchModels() }
     
     func fetchModels() async throws -> [Model] {
         let openAIRequest = OpenAIRequest<String>(
@@ -79,16 +49,9 @@ struct OpenAIService: Sendable {
         return response.data
     }
     
-    func sendChat(messages: [Message], model: String) async throws -> String {
-        let dto = ChatCompletionRequest(
-            model: model,
-            messages: messages.map {
-                ChatMessageDTO(role: $0.role.rawValue, content: $0.content)
-            }
-        )
-        
+    func sendChat(messages: [Message], model: Model) async throws -> Message {
         let openAIRequest = OpenAIRequest<ChatCompletionRequest>(
-            body: dto,
+            body: .init(model: model.id, messages: messages),
             contentType: .json,
             method: .post,
             path: "/api/chat/completions"
@@ -98,6 +61,12 @@ struct OpenAIService: Sendable {
             openAIRequest: openAIRequest
         )
         
-        return response.choices.first?.message.content ?? ""
+        guard let choice = response.choices.first else {
+            throw OpenAIError.invalidResponse
+        }
+        
+        return Message(role: .assistant, content: choice.message.content)
     }
+    
+    init(_ endpoint: EndpointConfiguration) { self.endpoint = endpoint }
 }

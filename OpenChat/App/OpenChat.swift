@@ -13,8 +13,16 @@ struct OpenChat: App {
     
     var body: some Scene {
         WindowGroup {
-            RootView()
-                .environment(viewModel)
+            
+            Group {
+                if !viewModel.isReady {
+                    OnboardingView()
+                    
+                } else {
+                    ContentView()
+                }
+            }
+            .environment(viewModel)
         }
     }
 }

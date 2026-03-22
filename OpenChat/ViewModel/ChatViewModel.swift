@@ -8,45 +8,39 @@
 import Foundation
 import Observation
 
-@Observable
+@MainActor @Observable
 final class ChatViewModel {
-    var chat: Chat
-    var input: String = ""
-    var isLoading = false
     
     private let service: OpenAIService
-    var selectedModel: String? = nil
+    
+    private(set) var chat: Chat
+    
+    var currentMessage: Message = Message(
+        role: .user,
+        content: ""
+    )
+    
+    func setCurrentModel(_ model: Model) {
+        chat.model = model
+    }
+    
+    func sendCurrentMessage() async throws {
+        guard !currentMessage.content.isEmpty,
+              let model = chat.model else { return }
+        
+        chat.messages.append(currentMessage)
+        currentMessage = Message(role: .user, content: "")
+       
+        let response = try await service.sendChat(
+            messages: chat.messages,
+            model: model
+        )
+        
+        chat.messages.append(response)
+    }
     
     init(chat: Chat, service: OpenAIService) {
         self.chat = chat
         self.service = service
-    }
-    
-    func send() async {
-        guard !input.isEmpty,
-              let selectedModel else { return }
-        
-        let userMessage = Message(role: .user, content: input)
-        chat.messages.append(userMessage)
-        input = ""
-        
-        isLoading = true
-        
-        do {
-            let response = try await service.sendChat(
-                messages: chat.messages,
-                model: selectedModel
-            )
-            
-            let assistant = Message(role: .assistant, content: response)
-            chat.messages.append(assistant)
-            
-        } catch {
-            chat.messages.append(
-                Message(role: .assistant, content: "Error: \(error.localizedDescription)")
-            )
-        }
-        
-        isLoading = false
     }
 }

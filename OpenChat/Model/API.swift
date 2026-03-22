@@ -9,7 +9,7 @@ import Foundation
 
 struct ChatCompletionRequest: Codable {
     let model: String
-    let messages: [ChatMessageDTO]
+    let messages: [Message]
 }
 
 struct ChatMessageDTO: Codable {
@@ -18,13 +18,9 @@ struct ChatMessageDTO: Codable {
 }
 
 struct ChatCompletionResponse: Codable {
+    
     struct Choice: Codable {
-        struct Message: Codable {
-            let role: String
-            let content: String
-        }
-        
-        let message: Message
+        let message: ChatMessageDTO
     }
     
     let choices: [Choice]
