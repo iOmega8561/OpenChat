@@ -10,6 +10,7 @@ import Foundation
 struct ChatCompletionRequest: Codable {
     let model: String
     let messages: [Message]
+    let stream: Bool
 }
 
 struct ChatMessageDTO: Codable {
@@ -34,4 +35,15 @@ struct ModelsResponse: Codable {
 struct VersionResponse: Codable {
     
     let version: String
+}
+
+struct StreamChunk: Decodable {
+    struct Choice: Decodable {
+        struct Delta: Decodable {
+            let content: String?
+        }
+        let delta: Delta
+    }
+    
+    let choices: [Choice]
 }
