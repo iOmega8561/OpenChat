@@ -8,6 +8,7 @@
 import Foundation
 
 struct OpenAIRequest<RequestType: Encodable>: Sendable {
+    
     enum Method: String {
         case get = "GET"
         case post = "POST"
@@ -27,25 +28,32 @@ struct OpenAIRequest<RequestType: Encodable>: Sendable {
         endpoint: EndpointConfiguration,
         session: URLSession
     ) async throws -> (Data, URLResponse) {
+       
+        return try await session.data(
+            for: buildURLRequest(endpoint: endpoint)
+        )
+    }
+    
+    func buildURLRequest(endpoint: EndpointConfiguration) throws -> URLRequest {
         let url = endpoint.baseURL.appendingPathComponent(self.path)
         
-        var urlRequest = URLRequest(url: url)
-        urlRequest.httpMethod = self.method.rawValue
+        var request = URLRequest(url: url)
+        request.httpMethod = self.method.rawValue
         
-        urlRequest.addValue(
+        request.addValue(
             self.contentType.rawValue,
             forHTTPHeaderField: "Content-Type"
         )
         
-        urlRequest.addValue(
+        request.addValue(
             "Bearer \(endpoint.token)",
             forHTTPHeaderField: "Authorization"
         )
         
-        if self.body != nil {
-            urlRequest.httpBody = try JSONEncoder().encode(self.body)
+        if let body {
+            request.httpBody = try JSONEncoder().encode(body)
         }
         
-        return try await session.data(for: urlRequest)
+        return request
     }
 }
