@@ -37,7 +37,7 @@ struct VersionResponse: Codable {
     let version: String
 }
 
-struct StreamChunk: Decodable {
+nonisolated struct StreamChunk: Decodable, Sendable {
     struct Choice: Decodable {
         struct Delta: Decodable {
             let content: String?

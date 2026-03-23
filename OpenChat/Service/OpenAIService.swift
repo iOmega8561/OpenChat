@@ -81,50 +81,37 @@ struct OpenAIService: Sendable {
         return Message(role: .assistant, content: choice.message.content)
     }
     
-    func streamChat(messages: [Message], model: Model) -> AsyncThrowingStream<String, Error> {
+    func streamChat(messages: [Message], model: Model) async throws -> AsyncThrowingStream<String, Error> {
         
-        AsyncThrowingStream { continuation in
-            
-            Task {
-                do {
-                    let openAIRequest = OpenAIRequest<ChatCompletionRequest>(
-                        body: .init(model: model.id, messages: messages, stream: true),
-                        contentType: .json,
-                        method: .post,
-                        path: "/api/chat/completions"
-                    )
-                    
-                    let request = try openAIRequest.buildURLRequest(endpoint: endpoint)
-                    
-                    let (bytes, response) = try await session.bytes(for: request)
-                    
-                    try OpenAIError.detectError(from: response)
-                    
-                    for try await line in bytes.lines {
-                        
-                        guard line.hasPrefix("data: ") else { continue }
-                        
-                        let json = line.replacingOccurrences(of: "data: ", with: "")
-                        
-                        if json == "[DONE]" {
-                            break
-                        }
-                        
-                        guard let data = json.data(using: .utf8) else { continue }
-                        
-                        let chunk = try JSONDecoder().decode(StreamChunk.self, from: data)
-                        
-                        if let content = chunk.choices.first?.delta.content {
-                            continuation.yield(content)
-                        }
-                    }
-                    
-                    continuation.finish()
-                    
-                } catch {
-                    continuation.finish(throwing: error)
+        let openAIRequest = OpenAIRequest<ChatCompletionRequest>(
+            body: .init(model: model.id, messages: messages, stream: true),
+            contentType: .json,
+            method: .post,
+            path: "/api/chat/completions"
+        )
+        
+        let request = try openAIRequest.buildURLRequest(endpoint: endpoint)
+        
+        let (bytes, response) = try await session.bytes(for: request)
+        
+        try OpenAIError.detectError(from: response)
+        
+        return AsyncThrowingStream<String, Error> { @Sendable in
+            for try await line in bytes.lines {
+                guard line.hasPrefix("data: ") else { continue }
+                
+                let json = line.replacingOccurrences(of: "data: ", with: "")
+                if json == "[DONE]" { break}
+                
+                guard let data = json.data(using: .utf8) else { continue }
+                
+                let chunk = try JSONDecoder().decode(StreamChunk.self, from: data)
+                
+                if let content = chunk.choices.first?.delta.content {
+                    return content
                 }
             }
+            return nil
         }
     }
     

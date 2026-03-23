@@ -49,7 +49,7 @@ final class ChatViewModel {
         var assistantMessage = Message(role: .assistant, content: "")
         chat.messages.append(assistantMessage)
         
-        let stream = service.streamChat(
+        let stream = try await service.streamChat(
             messages: chat.messages,
             model: model
         )
