@@ -26,7 +26,7 @@ struct ChatView: View {
                 TextField("Message", text: $viewModel.currentMessage.content)
                 
                 AsyncButton(verbatim: "Send") {
-                    try await viewModel.sendCurrentMessage()
+                    try await viewModel.sendCurrentMessageStreaming()
                 }
             }
             .padding()

@@ -39,6 +39,30 @@ final class ChatViewModel {
         chat.messages.append(response)
     }
     
+    func sendCurrentMessageStreaming() async throws {
+        guard !currentMessage.content.isEmpty,
+              let model = chat.model else { return }
+        
+        chat.messages.append(currentMessage)
+        currentMessage = Message(role: .user, content: "")
+        
+        var assistantMessage = Message(role: .assistant, content: "")
+        chat.messages.append(assistantMessage)
+        
+        let stream = service.streamChat(
+            messages: chat.messages,
+            model: model
+        )
+        
+        for try await chunk in stream {
+            assistantMessage.content += chunk
+            
+            if let index = chat.messages.indices.last {
+                chat.messages[index] = assistantMessage
+            }
+        }
+    }
+    
     init(chat: Chat, service: OpenAIService) {
         self.chat = chat
         self.service = service
