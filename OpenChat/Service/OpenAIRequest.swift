@@ -15,6 +15,7 @@ struct OpenAIRequest<RequestType: Encodable>: Sendable {
     
     enum ContentType: String {
         case json = "application/json"
+        case html = "text/html"
     }
     
     let body: RequestType?
@@ -30,7 +31,16 @@ struct OpenAIRequest<RequestType: Encodable>: Sendable {
         
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = self.method.rawValue
-        urlRequest.addValue(self.contentType.rawValue, forHTTPHeaderField: "Content-Type")
+        
+        urlRequest.addValue(
+            self.contentType.rawValue,
+            forHTTPHeaderField: "Content-Type"
+        )
+        
+        urlRequest.addValue(
+            "Bearer \(endpoint.token)",
+            forHTTPHeaderField: "Authorization"
+        )
         
         if self.body != nil {
             urlRequest.httpBody = try JSONEncoder().encode(self.body)

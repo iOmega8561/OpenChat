@@ -9,5 +9,5 @@ import Foundation
 
 struct EndpointConfiguration: Codable {
     var baseURL: URL
-    var token: String?
+    var token: String
 }

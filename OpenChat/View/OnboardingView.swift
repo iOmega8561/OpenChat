@@ -11,6 +11,7 @@ struct OnboardingView: View {
     @Environment(AppViewModel.self) private var viewModel
     
     @State private var urlString: String = ""
+    @State private var token: String = ""
         
     let webLoginURL: URL?
     
@@ -24,19 +25,25 @@ struct OnboardingView: View {
             TextField("https://your-openwebui", text: $urlString)
                 .textFieldStyle(.roundedBorder)
             
+            SecureField("Your JWT Token or OpenAI token", text: $token)
+                .textFieldStyle(.roundedBorder)
+            
             AsyncButton(verbatim: "Continue") {
                 guard let url = URL(string: urlString) else { return }
                 
-                let endpoint = EndpointConfiguration(baseURL: url)
-                viewModel.setEndpoint(endpoint)
+                viewModel.setEndpoint(EndpointConfiguration(
+                    baseURL: url,
+                    token: token
+                ))
                 
                 try await viewModel.initiateAuthFlow()
             }
         }
+        .frame(maxWidth: 400, maxHeight: 600)
         .padding()
         .sheet(isPresented: .constant(webLoginURL != nil)) {
             WebLoginView(url: webLoginURL)
-                .frame(idealWidth: 500, idealHeight: 500)
+                .frame(idealWidth: 500, idealHeight: 300)
         }
     }
 }
