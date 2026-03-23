@@ -21,13 +21,6 @@ final class WebViewCoordinator: NSObject, WKNavigationDelegate, WKHTTPCookieStor
     
     func cookiesDidChange(in cookieStore: WKHTTPCookieStore) {
         
-        cookieStore.getAllCookies { cookies in
-            
-            cookies.forEach { cookie in
-                HTTPCookieStorage
-                    .shared
-                    .setCookie(cookie)
-            }
-        }
+        SessionManager.shared.setCookies(from: cookieStore)
     }
 }
