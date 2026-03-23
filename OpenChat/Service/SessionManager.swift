@@ -6,16 +6,18 @@
 //
 
 import Foundation
+import WebKit
 
-final class SessionManager: NSObject, URLSessionDelegate, URLSessionTaskDelegate {
+final class SessionManager: NSObject, URLSessionDelegate {
     
+    @MainActor
     static let shared = SessionManager()
     
-    private override init() {}
+    let cookieStorage: HTTPCookieStorage = .shared
     
     lazy var session: URLSession = {
         let config = URLSessionConfiguration.default
-        config.httpCookieStorage = HTTPCookieStorage.shared
+        config.httpCookieStorage = self.cookieStorage
         config.httpShouldSetCookies = true
         
         return URLSession(
@@ -25,6 +27,18 @@ final class SessionManager: NSObject, URLSessionDelegate, URLSessionTaskDelegate
         )
     }()
     
+    func clearSession() {
+        cookieStorage.removeCookies(since: .distantPast)
+    }
+    
+    func setCookies(from webKitStore: WKHTTPCookieStore) {
+        webKitStore.getAllCookies { [weak self] cookies in
+            for cookie in cookies {
+                self?.cookieStorage.setCookie(cookie)
+            }
+        }
+    }
+    
     func urlSession(
         _ session: URLSession,
         task: URLSessionTask,
@@ -33,4 +47,6 @@ final class SessionManager: NSObject, URLSessionDelegate, URLSessionTaskDelegate
     ) async -> URLRequest? {
         return nil
     }
+    
+    private override init() {}
 }
