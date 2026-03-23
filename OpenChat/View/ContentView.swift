@@ -5,7 +5,7 @@
 //  Created by Giuseppe Rocco on 22/03/26.
 //
 
-import SwiftUI
+import Tools4SwiftUI
 
 struct ContentView: View {
     
@@ -47,8 +47,6 @@ struct ContentView: View {
             } else { Text("Select a chat") }
             
         }
-        .task {
-            try? await viewModel.fetchModels()
-        }
+        .bootstrapTask(handler: viewModel.fetchModels)
     }
 }
