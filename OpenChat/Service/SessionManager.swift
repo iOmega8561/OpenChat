@@ -8,7 +8,7 @@
 import Foundation
 import WebKit
 
-final class SessionManager: NSObject, URLSessionDelegate {
+final class SessionManager: NSObject, URLSessionTaskDelegate {
     
     @MainActor
     static let shared = SessionManager()
@@ -19,6 +19,7 @@ final class SessionManager: NSObject, URLSessionDelegate {
         let config = URLSessionConfiguration.default
         config.httpCookieStorage = self.cookieStorage
         config.httpShouldSetCookies = true
+        config.httpCookieAcceptPolicy = .always
         
         return URLSession(
             configuration: config,
