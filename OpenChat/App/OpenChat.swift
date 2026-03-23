@@ -14,15 +14,19 @@ struct OpenChat: App {
     var body: some Scene {
         WindowGroup {
             
-            Group {
-                if !viewModel.isReady {
-                    OnboardingView()
-                    
-                } else {
-                    ContentView()
-                }
+            switch viewModel.appMode {
+            case .ready:
+                
+                ContentView()
+                    .environment(viewModel)
+                
+            case .setup(let loginURL):
+                
+                OnboardingView(
+                    webLoginURL: loginURL
+                )
+                .environment(viewModel)
             }
-            .environment(viewModel)
         }
     }
 }

@@ -18,7 +18,7 @@ struct WebLoginView: ViewRepresentable {
     
     @Environment(AppViewModel.self) var viewModel
     
-    let url: URL
+    let url: URL?
     
     private func makeView(context: Context) -> WKWebView {
         let config = WKWebViewConfiguration()
@@ -34,7 +34,11 @@ struct WebLoginView: ViewRepresentable {
             .httpCookieStore.add(context.coordinator)
         
         webView.navigationDelegate = context.coordinator
-        webView.load(URLRequest(url: url))
+        
+        if let url {
+            webView.load(URLRequest(url: url))
+        }
+    
         return webView
     }
     

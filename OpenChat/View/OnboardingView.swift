@@ -8,12 +8,14 @@
 import Tools4SwiftUI
 
 struct OnboardingView: View {
-    @Environment(AppViewModel.self) private var app
+    @Environment(AppViewModel.self) private var viewModel
     
     @State private var urlString: String = ""
         
+    let webLoginURL: URL?
+    
     var body: some View {
-      
+        
         VStack(spacing: 20) {
             
             Text("Configure Endpoint")
@@ -26,18 +28,15 @@ struct OnboardingView: View {
                 guard let url = URL(string: urlString) else { return }
                 
                 let endpoint = EndpointConfiguration(baseURL: url)
-                app.setEndpoint(endpoint)
+                viewModel.setEndpoint(endpoint)
                 
-                try await app.initiateAuthFlow()
+                try await viewModel.initiateAuthFlow()
             }
         }
         .padding()
-        .sheet(isPresented: .constant(app.webLoginURL != nil)) {
-            if let url = app.webLoginURL {
-                WebLoginView(url: url)
-                    .frame(idealWidth: 500, idealHeight: 500)
-            }
+        .sheet(isPresented: .constant(webLoginURL != nil)) {
+            WebLoginView(url: webLoginURL)
+                .frame(idealWidth: 500, idealHeight: 500)
         }
-            
     }
 }

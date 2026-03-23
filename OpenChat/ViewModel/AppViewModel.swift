@@ -10,18 +10,12 @@ import Observation
 
 @MainActor @Observable
 final class AppViewModel {
-            
+    
+    private(set) var appMode: AppMode = .setup()
+    private(set) var endpoint: EndpointConfiguration?
     private(set) var models: [Model] = []
     private(set) var chats: [Chat] = []
-    private(set) var isAuthenticated: Bool = false
-    private(set) var webLoginURL: URL? = nil
-    
-    private(set) var endpoint: EndpointConfiguration?
-        
-    var isConfigured: Bool { endpoint != nil }
-    
-    var isReady: Bool { endpoint != nil && isAuthenticated }
-    
+                
     func setEndpoint(_ endpoint: EndpointConfiguration) {
         self.endpoint = endpoint
     }
@@ -43,10 +37,9 @@ final class AppViewModel {
             
         do {
             try await OpenAIService(endpoint).testConnection()
-            isAuthenticated = true
-            webLoginURL = nil
+            appMode = .ready
         } catch OpenAIError.unauthorized(let url) {
-            webLoginURL = url
+            appMode = .setup(loginAt: url)
         }
     }
 }
