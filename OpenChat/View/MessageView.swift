@@ -8,16 +8,29 @@
 import SwiftUI
 
 struct MessageView: View {
+    
     let message: Message
     
+    private var textContent: some View {
+        if let attributed = try? AttributedString(
+            markdown: message.content,
+            options: .init(interpretedSyntax: .inlineOnlyPreservingWhitespace)
+        ) {
+            Text(attributed)
+        } else {
+            Text(message.content)
+        }
+    }
+    
     var body: some View {
+        
         HStack {
             if message.role == .assistant {
-                Text(message.content)
+                textContent
                 Spacer()
             } else {
                 Spacer()
-                Text(message.content)
+                textContent
             }
         }
     }
