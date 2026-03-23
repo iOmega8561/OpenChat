@@ -36,10 +36,18 @@ final class AppViewModel {
         guard let endpoint else { return }
             
         do {
-            try await OpenAIService(endpoint).testConnection()
+            _ = try await OpenAIService(endpoint).fetchApiVersion()
             appMode = .ready
-        } catch OpenAIError.unauthorized(let url) {
-            appMode = .setup(loginAt: url)
+        } catch let error as OpenAIError {
+            switch error {
+            case .unauthorized(let url):
+                guard let url else {
+                    throw error
+                }
+                
+                appMode = .setup(loginAt: url)
+            default: throw error
+            }
         }
     }
 }

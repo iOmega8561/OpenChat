@@ -30,3 +30,8 @@ struct ModelsResponse: Codable {
     
     let data: [Model]
 }
+
+struct VersionResponse: Codable {
+    
+    let version: String
+}

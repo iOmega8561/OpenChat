@@ -32,7 +32,20 @@ struct OpenAIService: Sendable {
         }
     }
     
-    func testConnection() async throws { _ = try await fetchModels() }
+    func fetchApiVersion() async throws -> String {
+        let openAIRequest = OpenAIRequest<String>(
+            body: nil,
+            contentType: .json,
+            method: .get,
+            path: "/api/version"
+        )
+        
+        let response: VersionResponse = try await self.performRequest(
+            openAIRequest: openAIRequest
+        )
+        
+        return response.version
+    }
     
     func fetchModels() async throws -> [Model] {
         let openAIRequest = OpenAIRequest<String>(
