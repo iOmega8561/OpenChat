@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct OpenAIRequest<RequestType: Encodable>: Sendable {
+struct OpenAIRequest<EndpointModel: OpenAIModel>: Sendable {
     
     enum Method: String {
         case get = "GET"
@@ -19,22 +19,12 @@ struct OpenAIRequest<RequestType: Encodable>: Sendable {
         case html = "text/html"
     }
     
-    let body: RequestType?
+    let body: EndpointModel.RequestBodyType?
     let contentType: ContentType
     let method: Method
     let path: String
     
-    func perform(
-        endpoint: EndpointConfiguration,
-        session: URLSession
-    ) async throws -> (Data, URLResponse) {
-       
-        return try await session.data(
-            for: buildURLRequest(endpoint: endpoint)
-        )
-    }
-    
-    func buildURLRequest(endpoint: EndpointConfiguration) throws -> URLRequest {
+    func build(for endpoint: EndpointConfiguration) throws -> URLRequest {
         let url = endpoint.baseURL.appendingPathComponent(self.path)
         
         var request = URLRequest(url: url)
@@ -57,3 +47,39 @@ struct OpenAIRequest<RequestType: Encodable>: Sendable {
         return request
     }
 }
+
+extension OpenAIRequest where EndpointModel == Version {
+    static let apiVersion = OpenAIRequest(
+        body: .init(),
+        contentType: .json,
+        method: .get,
+        path: "/api/version"
+    )
+}
+
+extension OpenAIRequest where EndpointModel == Models {
+    static let models = OpenAIRequest(
+        body: .init(),
+        contentType: .json,
+        method: .get,
+        path: "/api/models"
+    )
+}
+
+extension OpenAIRequest where EndpointModel == ChatCompletion {
+    
+    static func chatCompletions(
+        messages: [Message],
+        model: Model,
+        stream: Bool = false
+    ) -> OpenAIRequest {
+        
+        return .init(
+            body: .init(model: model.id, messages: messages, stream: stream),
+            contentType: .json,
+            method: .post,
+            path: "/api/chat/completions"
+        )
+    }
+}
+

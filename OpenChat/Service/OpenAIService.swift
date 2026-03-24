@@ -13,102 +13,84 @@ struct OpenAIService: Sendable {
     
     private let session = SessionManager.shared.session
     
-    func performRequest<
-        RequestType: Encodable,
-        ResponseType: Decodable
-    >(openAIRequest: OpenAIRequest<RequestType>) async throws -> ResponseType {
+    private func performRequest<
+        EndpointModel: OpenAIModel
+    >(
+        _ request: OpenAIRequest<EndpointModel>
         
-        let (data, response) = try await openAIRequest.perform(
-            endpoint: endpoint,
-            session: session
+    ) async throws -> EndpointModel.ResponseBodyType {
+        
+        let (data, response) = try await session.data(
+            for: request.build(for: endpoint)
         )
         
         try OpenAIError.detectError(from: response)
                 
         do {
-            return try JSONDecoder().decode(ResponseType.self, from: data)
+            return try JSONDecoder().decode(EndpointModel.ResponseBodyType.self, from: data)
         } catch {
             throw OpenAIError.invalidResponse
         }
     }
     
     func fetchApiVersion() async throws -> String {
-        let openAIRequest = OpenAIRequest<String>(
-            body: nil,
-            contentType: .json,
-            method: .get,
-            path: "/api/version"
-        )
         
-        let response: VersionResponse = try await self.performRequest(
-            openAIRequest: openAIRequest
-        )
-        
-        return response.version
+        return try await self.performRequest(
+            .apiVersion
+        ).version
     }
     
     func fetchModels() async throws -> [Model] {
-        let openAIRequest = OpenAIRequest<String>(
-            body: nil,
-            contentType: .json,
-            method: .get,
-            path: "/api/models"
-        )
-        
-        let response: ModelsResponse = try await self.performRequest(
-            openAIRequest: openAIRequest
+        let response = try await self.performRequest(
+            .models
         )
         
         return response.data
     }
     
     func sendChat(messages: [Message], model: Model) async throws -> Message {
-        let openAIRequest = OpenAIRequest<ChatCompletionRequest>(
-            body: .init(model: model.id, messages: messages, stream: false),
-            contentType: .json,
-            method: .post,
-            path: "/api/chat/completions"
+        
+        let response = try await self.performRequest(
+            .chatCompletions(messages: messages, model: model)
         )
         
-        let response: ChatCompletionResponse = try await self.performRequest(
-            openAIRequest: openAIRequest
-        )
-        
-        guard let choice = response.choices.first else {
+        guard let messageContent = response.choices.first?.message?.content else {
             throw OpenAIError.invalidResponse
         }
         
-        return Message(role: .assistant, content: choice.message.content)
+        return Message(role: .assistant, content: messageContent)
     }
     
     func streamChat(messages: [Message], model: Model) async throws -> AsyncThrowingStream<String, Error> {
         
-        let openAIRequest = OpenAIRequest<ChatCompletionRequest>(
-            body: .init(model: model.id, messages: messages, stream: true),
-            contentType: .json,
-            method: .post,
-            path: "/api/chat/completions"
+        let request = OpenAIRequest.chatCompletions(
+            messages: messages,
+            model: model,
+            stream: true
         )
         
-        let request = try openAIRequest.buildURLRequest(endpoint: endpoint)
-        
-        let (bytes, response) = try await session.bytes(for: request)
+        let (bytes, response) = try await session.bytes(
+            for: request.build(for: endpoint)
+        )
         
         try OpenAIError.detectError(from: response)
         
+        var iterator = bytes.lines.makeAsyncIterator()
+        
         return AsyncThrowingStream<String, Error> { @Sendable in
-            for try await line in bytes.lines {
+            
+            while let line = try await iterator.next() {
                 guard line.hasPrefix("data: ") else { continue }
                 
                 let json = line.replacingOccurrences(of: "data: ", with: "")
-                if json == "[DONE]" { break}
+                if json == "[DONE]" { break }
                 
                 guard let data = json.data(using: .utf8) else { continue }
                 
-                let chunk = try JSONDecoder().decode(StreamChunk.self, from: data)
+                let chunk = try JSONDecoder().decode(ChatCompletion.ResponseBodyType.self, from: data)
                 
-                if let content = chunk.choices.first?.delta.content {
-                    return content
+                if let delta = chunk.choices.first?.delta {
+                    return delta.content
                 }
             }
             return nil
