@@ -13,7 +13,7 @@ final class SessionManager: NSObject, URLSessionTaskDelegate {
     @MainActor
     static let shared = SessionManager()
     
-    let cookieStorage: HTTPCookieStorage = .shared
+    private let cookieStorage: HTTPCookieStorage = .shared
     
     lazy var session: URLSession = {
         let config = URLSessionConfiguration.default
