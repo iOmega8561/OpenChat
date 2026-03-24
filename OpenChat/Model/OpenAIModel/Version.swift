@@ -1,10 +1,11 @@
 //
-//  Models 2.swift
+//  Version.swift
 //  OpenChat
 //
 //  Created by Giuseppe Rocco on 24/03/26.
 //
 
+import Foundation
 
 nonisolated enum Version: OpenAIModel {
     
@@ -12,7 +13,7 @@ nonisolated enum Version: OpenAIModel {
         init? () { return nil }
     }
     
-    struct ResponseBodyType: Codable {
-        let data: [Model]
+    struct ResponseBodyType: Decodable, Sendable {
+        let version: String
     }
 }

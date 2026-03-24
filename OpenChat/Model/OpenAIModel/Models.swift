@@ -13,7 +13,7 @@ nonisolated enum Models: OpenAIModel {
         init? () { return nil }
     }
     
-    struct ResponseBodyType: Codable {
+    struct ResponseBodyType: Decodable, Sendable {
         let data: [Model]
     }
 }

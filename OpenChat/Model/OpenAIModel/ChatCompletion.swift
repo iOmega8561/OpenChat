@@ -9,21 +9,21 @@ import Foundation
 
 nonisolated enum ChatCompletion: OpenAIModel {
     
-    struct RequestBodyType: Codable {
+    struct RequestBodyType: Encodable, Sendable {
         let model: String
         let messages: [Message]
         let stream: Bool
     }
     
-    struct ResponseBodyType: Codable {
-        struct Choice: Codable {
+    struct ResponseBodyType: Decodable, Sendable {
+        struct Choice: Decodable, Sendable {
             
-            struct ChatMessageDTO: Codable {
-                let role: String
-                let content: String
+            struct Message: Decodable, Sendable {
+                let content: String?
             }
             
-            let message: ChatMessageDTO
+            let message: Message?
+            let delta: Message?
         }
 
         let choices: [Choice]
