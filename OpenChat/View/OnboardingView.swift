@@ -43,7 +43,7 @@ struct OnboardingView: View {
         .padding()
         .sheet(isPresented: .constant(webLoginURL != nil)) {
             WebLoginView(url: webLoginURL)
-                .frame(idealWidth: 500, idealHeight: 300)
+                .frame(idealWidth: 350, idealHeight: 500)
         }
     }
 }

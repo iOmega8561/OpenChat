@@ -26,7 +26,11 @@ struct OpenChat: App {
                     webLoginURL: loginURL
                 )
                 .environment(viewModel)
+                #if os(macOS)
+                .frame(width: 700, height: 550)
+                #endif
             }
         }
+        .windowResizability(.contentSize)
     }
 }
