@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol OpenAIModel: Sendable {
+nonisolated protocol OpenAIModel: Sendable {
     
     associatedtype RequestBodyType: Encodable & Sendable
     

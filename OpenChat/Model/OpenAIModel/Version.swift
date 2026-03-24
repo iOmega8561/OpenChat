@@ -7,7 +7,7 @@
 
 import Foundation
 
-nonisolated enum Version: OpenAIModel {
+enum Version: OpenAIModel {
     
     struct RequestBodyType: Encodable, Sendable {
         init? () { return nil }

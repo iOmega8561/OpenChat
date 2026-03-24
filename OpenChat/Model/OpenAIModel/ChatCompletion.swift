@@ -7,7 +7,7 @@
 
 import Foundation
 
-nonisolated enum ChatCompletion: OpenAIModel {
+enum ChatCompletion: OpenAIModel {
     
     struct RequestBodyType: Encodable, Sendable {
         let model: String
