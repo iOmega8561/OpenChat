@@ -19,6 +19,9 @@ struct OpenChat: App {
                 
                 ContentView()
                     .environment(viewModel)
+                    #if os(macOS)
+                    .frame(minWidth: 500, minHeight: 450)
+                    #endif
                 
             case .setup(let loginURL):
                 
