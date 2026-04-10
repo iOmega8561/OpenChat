@@ -8,9 +8,9 @@
 import Foundation
 import WebKit
 
+@MainActor
 final class SessionManager: NSObject, URLSessionTaskDelegate {
     
-    @MainActor
     static let shared = SessionManager()
     
     private let cookieStorage: HTTPCookieStorage = .shared
