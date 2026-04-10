@@ -12,26 +12,36 @@ struct ContentView: View {
     @Environment(AppViewModel.self) private var viewModel
     
     @State private var selection: Chat? = nil
+    @State private var searchQuery: String = ""
+    
+    private var filteredChats: [Chat] {
+        searchQuery.isEmpty ? viewModel.chats :
+                              viewModel.chats.filter { $0.title.localizedStandardContains(searchQuery) }
+    }
     
     var body: some View {
         
         NavigationSplitView {
             
-            List(viewModel.chats, selection: $selection) { chat in
-                NavigationLink(value: chat) {
-                    Text(chat.title)
+            List(selection: $selection) {
+                ForEach(filteredChats) { chat in
+            
+                    SidebarRow(chat: chat)
                 }
-                .id(chat.id)
+                .onDelete(perform: viewModel.deleteChats)
             }
+            .searchable(text: $searchQuery, placement: .sidebar)
             
             .toolbar {
+                #if !os(macOS)
+                EditButton()
+                #endif
                 ToolbarItem(placement: .primaryAction) {
                     Button("New Chat", systemImage: "plus") {
                         selection = viewModel.createChat()
                     }
                 }
             }
-            
         } detail: {
             
             if let endpoint = viewModel.endpoint,

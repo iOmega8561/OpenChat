@@ -5,7 +5,7 @@
 //  Created by Giuseppe Rocco on 22/03/26.
 //
 
-import Foundation
+import SwiftUI
 import Observation
 
 @MainActor @Observable
@@ -24,6 +24,10 @@ final class AppViewModel {
         let newChat = Chat()
         chats.insert(newChat, at: 0)
         return newChat
+    }
+    
+    func deleteChats(at offsets: IndexSet) {
+        chats.remove(atOffsets: offsets)
     }
     
     func fetchModels() async throws {
