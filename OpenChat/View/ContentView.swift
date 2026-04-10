@@ -34,7 +34,9 @@ struct ContentView: View {
             
             .toolbar {
                 #if !os(macOS)
-                EditButton()
+                ToolbarItem {
+                    EditButton()
+                }
                 #endif
                 ToolbarItem(placement: .primaryAction) {
                     Button("New Chat", systemImage: "plus") {

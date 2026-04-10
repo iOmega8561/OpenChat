@@ -43,5 +43,10 @@ struct ChatView: View {
                 }
             }
         }
+        #if os(macOS)
+        .navigationSubtitle(viewModel.chat.title)
+        #else
+        .navigationTitle(viewModel.chat.title)
+        #endif
     }
 }
