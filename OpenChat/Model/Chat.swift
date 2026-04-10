@@ -8,7 +8,7 @@
 import Foundation
 
 @Observable
-final class Chat: Identifiable, Codable {
+final class Chat: Identifiable {
     
     let id: UUID
     var title: String
@@ -26,6 +26,17 @@ final class Chat: Identifiable, Codable {
         self.title = title
         self.messages = messages
         self.createdAt = createdAt
+    }
+}
+
+extension Chat: Codable {
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case _title
+        case _messages
+        case _createdAt
+        case _model
     }
 }
 
