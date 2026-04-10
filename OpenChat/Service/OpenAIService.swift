@@ -79,13 +79,21 @@ struct OpenAIService: Sendable {
         
         return AsyncThrowingStream<String, Error> { @Sendable in
             
-            while let line = try await iterator.next() {
-                guard line.hasPrefix("data: ") else { continue }
+            while let line: String = try await { @MainActor in
+                return try await iterator.next()
+            }() {
+                print(line)
+                
+                guard line.hasPrefix("data: ") else {
+                    continue
+                }
                 
                 let json = line.replacingOccurrences(of: "data: ", with: "")
                 if json == "[DONE]" { break }
                 
-                guard let data = json.data(using: .utf8) else { continue }
+                guard let data = json.data(using: .utf8) else {
+                    continue
+                }
                 
                 let chunk = try JSONDecoder().decode(ChatCompletion.ResponseBodyType.self, from: data)
                 
@@ -93,6 +101,7 @@ struct OpenAIService: Sendable {
                     return delta.content
                 }
             }
+            
             return nil
         }
     }
