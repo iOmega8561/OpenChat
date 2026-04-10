@@ -18,12 +18,18 @@ enum ChatCompletion: OpenAIModel {
     struct ResponseBodyType: Decodable, Sendable {
         struct Choice: Decodable, Sendable {
             
-            struct Message: Decodable, Sendable {
+            // With a single struct we can decode both
+            // reasoning content and ordinary messages
+            struct MessageChunk: Decodable, Sendable {
                 let content: String?
+                let reasoning_content: String?
             }
             
-            let message: Message?
-            let delta: Message?
+            // While streaming the chat, the responses will contain this property
+            let delta: MessageChunk?
+            
+            // The "message" property is only for non-streamed chat completions
+            let message: MessageChunk?
         }
 
         let choices: [Choice]

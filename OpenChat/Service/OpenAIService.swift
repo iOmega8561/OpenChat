@@ -98,7 +98,7 @@ struct OpenAIService: Sendable {
                 let chunk = try JSONDecoder().decode(ChatCompletion.ResponseBodyType.self, from: data)
                 
                 if let delta = chunk.choices.first?.delta {
-                    return delta.content
+                    return delta.content ?? delta.reasoning_content
                 }
             }
             
