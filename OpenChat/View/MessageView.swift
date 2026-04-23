@@ -29,8 +29,9 @@ struct MessageView: View {
                !message.reasoning.isEmpty {
                 DisclosureGroup("Reasoning") {
                     markdownText(message.reasoning)
+                        .foregroundStyle(.secondary)
+                        .padding(.bottom)
                 }
-                .disclosureGroupStyle(.automatic)
             }
                         
             HStack {
