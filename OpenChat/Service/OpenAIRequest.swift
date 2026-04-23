@@ -48,21 +48,12 @@ struct OpenAIRequest<EndpointModel: OpenAIModel>: Sendable {
     }
 }
 
-extension OpenAIRequest where EndpointModel == Version {
-    static let apiVersion = OpenAIRequest(
-        body: .init(),
-        contentType: .json,
-        method: .get,
-        path: "/api/version"
-    )
-}
-
 extension OpenAIRequest where EndpointModel == Models {
     static let models = OpenAIRequest(
         body: .init(),
         contentType: .json,
         method: .get,
-        path: "/api/models"
+        path: "/v1/models"
     )
 }
 
@@ -78,7 +69,7 @@ extension OpenAIRequest where EndpointModel == ChatCompletion {
             body: .init(model: model.id, messages: messages, stream: stream),
             contentType: .json,
             method: .post,
-            path: "/api/chat/completions"
+            path: "/v1/chat/completions"
         )
     }
 }

@@ -40,7 +40,7 @@ final class AppViewModel {
         guard let endpoint else { return }
             
         do {
-            _ = try await OpenAIService(endpoint).fetchApiVersion()
+            _ = try await fetchModels()
             appMode = .ready
         } catch let error as OpenAIError {
             switch error {

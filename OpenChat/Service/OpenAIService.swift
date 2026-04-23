@@ -33,13 +33,6 @@ struct OpenAIService: Sendable {
         }
     }
     
-    func fetchApiVersion() async throws -> String {
-        
-        return try await self.performRequest(
-            .apiVersion
-        ).version
-    }
-    
     func fetchModels() async throws -> [Model] {
         let response = try await self.performRequest(
             .models
