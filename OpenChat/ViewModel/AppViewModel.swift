@@ -37,7 +37,7 @@ final class AppViewModel {
     }
     
     func initiateAuthFlow() async throws {
-        guard let endpoint else { return }
+        guard endpoint != nil else { return }
             
         do {
             _ = try await fetchModels()
