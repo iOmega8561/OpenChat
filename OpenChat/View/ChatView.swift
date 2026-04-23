@@ -16,9 +16,11 @@ struct ChatView: View {
     var body: some View {
 
         VStack {
-            
-            List(viewModel.chat.messages) { message in
-                MessageView(message: message)
+            ScrollView {
+                ForEach(viewModel.chat.messages) { message in
+                    MessageView(message: message)
+                }
+                .padding()
             }
             
             HStack {
