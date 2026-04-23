@@ -23,10 +23,14 @@ struct OnboardingView: View {
                 .font(.largeTitle)
             
             TextField("https://your-openwebui", text: $urlString)
+                .textInputAutocapitalization(.never)
                 .textFieldStyle(.roundedBorder)
+                .autocorrectionDisabled(true)
             
             SecureField("Your JWT Token or OpenAI token", text: $token)
+                .textInputAutocapitalization(.never)
                 .textFieldStyle(.roundedBorder)
+                .autocorrectionDisabled(true)
             
             AsyncButton(verbatim: "Continue") {
                 guard let url = URL(string: urlString) else { return }
