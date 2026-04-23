@@ -74,30 +74,20 @@ struct OpenAIService: Sendable {
             
             while let line: String = try await { @MainActor in
                 return try await iterator.next()
-            }() {
-                print(line)
-                
+            }() {                
                 guard line.hasPrefix("data: ") else {
                     continue
                 }
-                
-                print("OK 1")
-                
+                                
                 let json = line.replacingOccurrences(of: "data: ", with: "")
                 if json == "[DONE]" { break }
-                
-                print("OK 2")
-                
+                                
                 guard let data = json.data(using: .utf8) else {
                     continue
                 }
-                
-                print("OK 3")
-                
+                                
                 let chunk = try JSONDecoder().decode(ChatCompletion.ResponseBodyType.self, from: data)
-                
-                print(chunk)
-                
+                                
                 if let delta = chunk.choices.first?.delta {
                     return delta
                 }
