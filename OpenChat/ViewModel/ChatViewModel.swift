@@ -46,16 +46,17 @@ final class ChatViewModel {
         chat.messages.append(currentMessage)
         currentMessage = Message(role: .user, content: "")
         
-        var assistantMessage = Message(role: .assistant, content: "")
-        chat.messages.append(assistantMessage)
-        
         let stream = try await service.streamChat(
             messages: chat.messages,
             model: model
         )
         
+        var assistantMessage = Message(role: .assistant, content: "")
+        chat.messages.append(assistantMessage)
+        
         for try await chunk in stream {
-            assistantMessage.content += chunk
+            assistantMessage.reasoning += chunk.reasoning_content ?? ""
+            assistantMessage.content += chunk.content ?? ""
             
             if let index = chat.messages.indices.last {
                 chat.messages[index] = assistantMessage

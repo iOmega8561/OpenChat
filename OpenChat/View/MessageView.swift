@@ -10,27 +10,37 @@ import SwiftUI
 struct MessageView: View {
     
     let message: Message
-    
-    private var textContent: some View {
+        
+    private func markdownText(_ content: String) -> Text {
         if let attributed = try? AttributedString(
-            markdown: message.content,
+            markdown: content,
             options: .init(interpretedSyntax: .inlineOnlyPreservingWhitespace)
         ) {
-            Text(attributed)
+            return Text(attributed)
         } else {
-            Text(message.content)
+            return Text(content)
         }
     }
     
     var body: some View {
         
-        HStack {
-            if message.role == .assistant {
-                textContent
-                Spacer()
-            } else {
-                Spacer()
-                textContent
+        VStack(alignment: .leading) {
+            if message.role == .assistant,
+               !message.reasoning.isEmpty {
+                DisclosureGroup("Reasoning") {
+                    markdownText(message.reasoning)
+                }
+                .disclosureGroupStyle(.automatic)
+            }
+                        
+            HStack {
+                if message.role == .assistant {
+                    markdownText(message.content)
+                    Spacer()
+                } else {
+                    Spacer()
+                    markdownText(message.content)
+                }
             }
         }
     }

@@ -54,7 +54,7 @@ struct OpenAIService: Sendable {
         return Message(role: .assistant, content: messageContent)
     }
     
-    func streamChat(messages: [Message], model: Model) async throws -> AsyncThrowingStream<String, Error> {
+    func streamChat(messages: [Message], model: Model) async throws -> AsyncThrowingStream<ChatCompletion.ResponseBodyType.Choice.MessageChunk, Error> {
         
         let request = OpenAIRequest.chatCompletions(
             messages: messages,
@@ -70,7 +70,7 @@ struct OpenAIService: Sendable {
         
         var iterator = bytes.lines.makeAsyncIterator()
         
-        return AsyncThrowingStream<String, Error> { @Sendable in
+        return AsyncThrowingStream<ChatCompletion.ResponseBodyType.Choice.MessageChunk, Error> { @Sendable in
             
             while let line: String = try await { @MainActor in
                 return try await iterator.next()
@@ -81,17 +81,25 @@ struct OpenAIService: Sendable {
                     continue
                 }
                 
+                print("OK 1")
+                
                 let json = line.replacingOccurrences(of: "data: ", with: "")
                 if json == "[DONE]" { break }
+                
+                print("OK 2")
                 
                 guard let data = json.data(using: .utf8) else {
                     continue
                 }
                 
+                print("OK 3")
+                
                 let chunk = try JSONDecoder().decode(ChatCompletion.ResponseBodyType.self, from: data)
                 
+                print(chunk)
+                
                 if let delta = chunk.choices.first?.delta {
-                    return delta.content ?? delta.reasoning_content
+                    return delta
                 }
             }
             
