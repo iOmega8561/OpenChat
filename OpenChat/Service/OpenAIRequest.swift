@@ -19,24 +19,24 @@ struct OpenAIRequest<EndpointModel: OpenAIModel>: Sendable {
         case html = "text/html"
     }
     
-    let body: EndpointModel.RequestBodyType?
-    let contentType: ContentType
-    let method: Method
-    let path: String
+    let requestBody: EndpointModel.RequestBodyType?
+    let httpContentType: ContentType
+    let httpMethod: Method
+    let apiResourcePath: String
     let apiResourceParam: String?
     
     func build(for config: OpenAIConfiguration) throws -> URLRequest {
-        var url = config.baseURL.appendingPathComponent(self.path)
+        var url = config.baseURL.appendingPathComponent(self.apiResourcePath)
         
         if let apiResourceParam {
             url.appendPathComponent(apiResourceParam)
         }
         
         var request = URLRequest(url: url)
-        request.httpMethod = self.method.rawValue
+        request.httpMethod = self.httpMethod.rawValue
         
         request.addValue(
-            self.contentType.rawValue,
+            self.httpContentType.rawValue,
             forHTTPHeaderField: "Content-Type"
         )
         
@@ -45,8 +45,8 @@ struct OpenAIRequest<EndpointModel: OpenAIModel>: Sendable {
             forHTTPHeaderField: "Authorization"
         )
         
-        if let body {
-            request.httpBody = try JSONEncoder().encode(body)
+        if let requestBody {
+            request.httpBody = try JSONEncoder().encode(requestBody)
         }
         
         return request
@@ -55,10 +55,10 @@ struct OpenAIRequest<EndpointModel: OpenAIModel>: Sendable {
 
 extension OpenAIRequest where EndpointModel == Models {
     static let models = OpenAIRequest(
-        body: .init(),
-        contentType: .json,
-        method: .get,
-        path: "/v1/models",
+        requestBody: .init(),
+        httpContentType: .json,
+        httpMethod: .get,
+        apiResourcePath: "/v1/models",
         apiResourceParam: nil
     )
 }
@@ -72,10 +72,10 @@ extension OpenAIRequest where EndpointModel == ChatCompletion {
     ) -> OpenAIRequest {
         
         return .init(
-            body: .init(model: model.id, messages: messages, stream: stream),
-            contentType: .json,
-            method: .post,
-            path: "/v1/chat/completions",
+            requestBody: .init(model: model.id, messages: messages, stream: stream),
+            httpContentType: .json,
+            httpMethod: .post,
+            apiResourcePath: "/v1/chat/completions",
             apiResourceParam: nil
         )
     }
