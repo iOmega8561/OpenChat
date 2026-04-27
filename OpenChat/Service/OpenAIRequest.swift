@@ -23,9 +23,14 @@ struct OpenAIRequest<EndpointModel: OpenAIModel>: Sendable {
     let contentType: ContentType
     let method: Method
     let path: String
+    let apiResourceParam: String?
     
     func build(for config: OpenAIConfiguration) throws -> URLRequest {
-        let url = config.baseURL.appendingPathComponent(self.path)
+        var url = config.baseURL.appendingPathComponent(self.path)
+        
+        if let apiResourceParam {
+            url.appendPathComponent(apiResourceParam)
+        }
         
         var request = URLRequest(url: url)
         request.httpMethod = self.method.rawValue
@@ -53,7 +58,8 @@ extension OpenAIRequest where EndpointModel == Models {
         body: .init(),
         contentType: .json,
         method: .get,
-        path: "/v1/models"
+        path: "/v1/models",
+        apiResourceParam: nil
     )
 }
 
@@ -69,7 +75,8 @@ extension OpenAIRequest where EndpointModel == ChatCompletion {
             body: .init(model: model.id, messages: messages, stream: stream),
             contentType: .json,
             method: .post,
-            path: "/v1/chat/completions"
+            path: "/v1/chat/completions",
+            apiResourceParam: nil
         )
     }
 }
