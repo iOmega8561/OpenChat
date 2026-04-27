@@ -19,7 +19,7 @@ struct OnboardingView: View {
         
         VStack(spacing: 20) {
             
-            Text("Configure Endpoint")
+            Text("Configure Connection")
                 .font(.largeTitle)
             
             TextField("https://your-openai-url.com", text: $urlString)
