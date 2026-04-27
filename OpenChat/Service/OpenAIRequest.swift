@@ -9,10 +9,6 @@ import Foundation
 
 struct OpenAIRequest<EndpointModel: OpenAIModel>: Sendable {
     
-    enum Method: String {
-        case get = "GET"
-        case post = "POST"
-    }
     
     enum ContentType: String {
         case json = "application/json"
@@ -21,7 +17,7 @@ struct OpenAIRequest<EndpointModel: OpenAIModel>: Sendable {
     
     let requestBody: EndpointModel.RequestBodyType?
     let httpContentType: ContentType
-    let httpMethod: Method
+    let httpMethod: HTTPMethod
     let apiResourcePath: String
     let apiResourceParam: String?
     
