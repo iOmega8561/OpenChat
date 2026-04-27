@@ -24,8 +24,8 @@ struct OpenAIRequest<EndpointModel: OpenAIModel>: Sendable {
     let method: Method
     let path: String
     
-    func build(for endpoint: EndpointConfiguration) throws -> URLRequest {
-        let url = endpoint.baseURL.appendingPathComponent(self.path)
+    func build(for config: OpenAIConfiguration) throws -> URLRequest {
+        let url = config.baseURL.appendingPathComponent(self.path)
         
         var request = URLRequest(url: url)
         request.httpMethod = self.method.rawValue
@@ -36,7 +36,7 @@ struct OpenAIRequest<EndpointModel: OpenAIModel>: Sendable {
         )
         
         request.addValue(
-            "Bearer \(endpoint.token)",
+            "Bearer \(config.token)",
             forHTTPHeaderField: "Authorization"
         )
         

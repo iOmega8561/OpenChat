@@ -46,14 +46,14 @@ struct ContentView: View {
             }
         } detail: {
             
-            if let endpoint = viewModel.endpoint,
+            if let config = viewModel.config,
                let chat = selection {
                 
                 ChatView(models: viewModel.models)
                     .id(chat.id)
                     .environment(ChatViewModel(
                         chat: chat,
-                        service: .init(endpoint)
+                        service: .init(config)
                     ))
                 
             } else { Text("Select a chat") }

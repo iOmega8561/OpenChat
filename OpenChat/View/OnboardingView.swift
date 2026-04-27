@@ -39,7 +39,7 @@ struct OnboardingView: View {
             AsyncButton(verbatim: "Continue") {
                 guard let url = URL(string: urlString) else { return }
                 
-                viewModel.setEndpoint(EndpointConfiguration(
+                viewModel.setConfig(.init(
                     baseURL: url,
                     token: token
                 ))

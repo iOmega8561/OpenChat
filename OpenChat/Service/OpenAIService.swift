@@ -9,7 +9,7 @@ import Foundation
 
 struct OpenAIService: Sendable {
     
-    private let endpoint: EndpointConfiguration
+    private let config: OpenAIConfiguration
     
     private let session = SessionManager.shared.session
     
@@ -21,7 +21,7 @@ struct OpenAIService: Sendable {
     ) async throws -> EndpointModel.ResponseBodyType {
         
         let (data, response) = try await session.data(
-            for: request.build(for: endpoint)
+            for: request.build(for: config)
         )
         
         try OpenAIError.detectError(from: response)
@@ -63,7 +63,7 @@ struct OpenAIService: Sendable {
         )
         
         let (bytes, response) = try await session.bytes(
-            for: request.build(for: endpoint)
+            for: request.build(for: config)
         )
         
         try OpenAIError.detectError(from: response)
@@ -97,5 +97,5 @@ struct OpenAIService: Sendable {
         }
     }
     
-    init(_ endpoint: EndpointConfiguration) { self.endpoint = endpoint }
+    init(_ config: OpenAIConfiguration) { self.config = config }
 }

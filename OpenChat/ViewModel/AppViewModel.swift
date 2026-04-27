@@ -12,12 +12,12 @@ import Observation
 final class AppViewModel {
     
     private(set) var appMode: AppMode = .setup()
-    private(set) var endpoint: EndpointConfiguration?
+    private(set) var config: OpenAIConfiguration?
     private(set) var models: [Model] = []
     private(set) var chats: [Chat] = []
                 
-    func setEndpoint(_ endpoint: EndpointConfiguration) {
-        self.endpoint = endpoint
+    func setConfig(_ config: OpenAIConfiguration) {
+        self.config = config
     }
     
     func createChat() -> Chat {
@@ -31,13 +31,13 @@ final class AppViewModel {
     }
     
     func fetchModels() async throws {
-        guard let endpoint else { return }
+        guard let config else { return }
         
-        self.models = try await OpenAIService(endpoint).fetchModels()
+        self.models = try await OpenAIService(config).fetchModels()
     }
     
     func initiateAuthFlow() async throws {
-        guard endpoint != nil else { return }
+        guard config != nil else { return }
             
         do {
             _ = try await fetchModels()
