@@ -54,7 +54,8 @@ final class ChatViewModel {
         var assistantMessage = Message(role: .assistant, content: "")
         chat.messages.append(assistantMessage)
         
-        for try await chunk in stream {
+        typealias Chunk = ChatCompletion.ResponseBodyType.Choice.MessageChunk
+        for try await case let chunk as Chunk in stream {
             assistantMessage.reasoning += chunk.reasoning_content ?? ""
             assistantMessage.content += chunk.content ?? ""
             

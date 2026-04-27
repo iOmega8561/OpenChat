@@ -9,6 +9,13 @@ import Foundation
 
 struct OpenAIService: Sendable {
     
+    private typealias StreamedSequence<EndpointModel: OpenAIModel> = AsyncThrowingCompactMapSequence<
+        AsyncPrefixWhileSequence<
+            AsyncLineSequence<URLSession.AsyncBytes>
+        >,
+        EndpointModel.ResponseBodyType
+    >
+    
     private let config: OpenAIConfiguration
     
     private let session = SessionManager.shared.session
@@ -33,6 +40,39 @@ struct OpenAIService: Sendable {
         }
     }
     
+    private func streamRequest<
+        EndpointModel: OpenAIModel
+    >(
+        _ request: OpenAIRequest<EndpointModel>
+        
+    ) async throws -> StreamedSequence<EndpointModel> {
+        
+        let (bytes, response) = try await session.bytes(
+            for: request.build(for: config)
+        )
+        
+        try OpenAIError.detectError(from: response)
+        
+        let decoder = JSONDecoder()
+
+        return try bytes.lines
+            .prefix {
+                $0 != "data: [DONE]"
+            }
+            .compactMap { line -> EndpointModel.ResponseBodyType? in
+                guard line.hasPrefix("data: ") else {
+                    return nil
+                }
+                
+                let json = line.dropFirst(6)
+                guard let data = json.data(using: .utf8) else {
+                    return nil
+                }
+                
+                return try decoder.decode(EndpointModel.ResponseBodyType.self, from: data)
+            }
+    }
+    
     func fetchModels() async throws -> [Model] {
         let response = try await self.performRequest(
             .models
@@ -54,7 +94,7 @@ struct OpenAIService: Sendable {
         return Message(role: .assistant, content: messageContent)
     }
     
-    func streamChat(messages: [Message], model: Model) async throws -> AsyncThrowingStream<ChatCompletion.ResponseBodyType.Choice.MessageChunk, Error> {
+    func streamChat(messages: [Message], model: Model) async throws -> some AsyncSequence {
         
         let request = OpenAIRequest.chatCompletions(
             messages: messages,
@@ -62,39 +102,10 @@ struct OpenAIService: Sendable {
             stream: true
         )
         
-        let (bytes, response) = try await session.bytes(
-            for: request.build(for: config)
-        )
-        
-        try OpenAIError.detectError(from: response)
-        
-        var iterator = bytes.lines.makeAsyncIterator()
-        
-        return AsyncThrowingStream<ChatCompletion.ResponseBodyType.Choice.MessageChunk, Error> { @Sendable in
-            
-            while let line: String = try await { @MainActor in
-                return try await iterator.next()
-            }() {                
-                guard line.hasPrefix("data: ") else {
-                    continue
-                }
-                                
-                let json = line.replacingOccurrences(of: "data: ", with: "")
-                if json == "[DONE]" { break }
-                                
-                guard let data = json.data(using: .utf8) else {
-                    continue
-                }
-                                
-                let chunk = try JSONDecoder().decode(ChatCompletion.ResponseBodyType.self, from: data)
-                                
-                if let delta = chunk.choices.first?.delta {
-                    return delta
-                }
+        return try await streamRequest(request)
+            .compactMap { line in
+                line.choices.first?.delta
             }
-            
-            return nil
-        }
     }
     
     init(_ config: OpenAIConfiguration) { self.config = config }
