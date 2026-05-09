@@ -1,6 +1,6 @@
 # OpenChat
 **OpenChat** is a minimal LLM chat client built in **SwiftUI** for macOS, iOS and iPadOS.  
-It talks to an Open WebUI deployment that may be protected by a reverse‑proxy authentication flow (e.g. Traefik + Authelia).
+It talks to an OpenAI-compatible server that may be protected by a reverse‑proxy authentication flow (e.g. Traefik + Authelia).
 
 > [!WARNING]
 > **⚠️ Super Alpha** – the app is only a starting point and is not ready for production use.
@@ -10,14 +10,14 @@ It talks to an Open WebUI deployment that may be protected by a reverse‑prox
 ## 🚀 Features
 | ✨ | Feature |
 |---|---------|
-| 🔌 | Connect to an Open WebUI endpoint via a simple URL |
+| 🔌 | Connect to an OpenAI endpoint via a simple URL |
 | 🔐 | Reverse‑proxy authentication (ForwardAuth, e.g. Authelia + Traefik) |
-| 💬 | Basic chat UI (send/receive text) |
+| 💬 | Basic chat UI (send/receive text) with streaming and reasoning support |
 | 🌙 | Light/dark mode support |
 | 📱 | Runs on macOS, iOS, and iPadOS |
 
 > [!NOTE]
-> **⚠️**Does not currenlyt support Markdown rendering or advanced message features.
+> **⚠️**Does not currently support full markdown rendering or advanced message features.
 
 ## 📦 Tech Stack
 - **SwiftUI** – UI framework
@@ -47,11 +47,11 @@ It talks to an Open WebUI deployment that may be protected by a reverse‑prox
    Select a target (`OpenChat (macOS)`, `OpenChat (iOS)`, or `OpenChat (iPad)`) and hit **⌘R**.
 
 ## 🔐 Authentication Flow
-If your Open WebUI is behind a reverse‑proxy with ForwardAuth, OpenChat will automatically open a web‑view for the login flow, store the resulting cookie, and then send chat requests.
+If your OpenAI server is behind a reverse‑proxy with ForwardAuth, OpenChat will automatically open a web‑view for the login flow, store the resulting cookie, and then send chat requests. The app is able to intercept *302* responses from the web server, using the **Location** header (Authelia would be the best example for this behaviour).
 
 ## 📜 Privacy
 OpenChat respects your privacy.  
-It only connects to the internet when you explicitly launch the app and enter an Open WebUI URL.  
+It only connects to the internet when you explicitly launch the app and enter an OpenAI URL.  
 No data is collected, stored, or transmitted beyond the chat traffic you initiate.
 
 ---
