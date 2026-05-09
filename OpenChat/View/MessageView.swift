@@ -5,7 +5,7 @@
 //  Created by Giuseppe Rocco on 22/03/26.
 //
 
-import SwiftUI
+import Tools4SwiftUI
 
 struct MessageView: View {
     
@@ -27,10 +27,19 @@ struct MessageView: View {
         VStack(alignment: .leading) {
             if message.role == .assistant,
                !message.reasoning.isEmpty {
-                DisclosureGroup("Reasoning") {
+                DisclosureGroup {
                     markdownText(message.reasoning)
                         .foregroundStyle(.secondary)
                         .padding(.bottom)
+                } label: {
+                    Text("Reasoning")
+                    
+                    if message.content.isEmpty {
+                        ProgressView()
+                            #if os(macOS)
+                            .scaleEffect(0.5)
+                            #endif
+                    }
                 }
             }
                         
@@ -41,6 +50,9 @@ struct MessageView: View {
                 } else {
                     Spacer()
                     markdownText(message.content)
+                        .padding(12)
+                        .background(Color.gray.opacity(0.2))
+                        .clipShape(.rect(cornerRadius: .bestRadius))
                 }
             }
         }
