@@ -40,15 +40,11 @@ final class AppViewModel {
         guard config != nil else { return }
             
         do {
-            _ = try await fetchModels()
+            try await fetchModels()
             appMode = .ready
         } catch let error as OpenAIError {
             switch error {
-            case .unauthorized(let url):
-                guard let url else {
-                    throw error
-                }
-                
+            case .location(let url):
                 appMode = .setup(loginAt: url)
             default: throw error
             }

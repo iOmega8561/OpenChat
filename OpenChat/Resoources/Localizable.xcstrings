@@ -49,6 +49,86 @@
         }
       }
     },
+    "error-bad-request" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bad Request"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Richiesta invalida o malformata"
+          }
+        }
+      }
+    },
+    "error-invalid-response" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server sent an invalid response"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il server ha inviato una risposta invalida"
+          }
+        }
+      }
+    },
+    "error-location" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server responded with “Location” (redirecting at “%@“)"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il server ha risposto con “Location” (reindirizzamento a “%@”)"
+          }
+        }
+      }
+    },
+    "error-unauthorized" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unauthorized. Is the API key valid?"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non autorizzato. La chiave API è corretta?"
+          }
+        }
+      }
+    },
+    "error-unexpected" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server  sent an unexpected response (Status Code %lld)"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il server ha inviato una risposta inattesa (codice stato %lld)"
+          }
+        }
+      }
+    },
     "hint-chat-name" : {
       "localizations" : {
         "en" : {
