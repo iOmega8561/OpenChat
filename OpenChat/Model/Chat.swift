@@ -18,7 +18,7 @@ final class Chat: Identifiable {
     
     init(
         id: UUID = UUID(),
-        title: String = "New Chat",
+        title: String = .init(localized: "title-new-chat"),
         messages: [Message] = [],
         createdAt: Date = .now,
     ) {

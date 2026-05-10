@@ -32,7 +32,7 @@ struct MessageView: View {
                         .foregroundStyle(.secondary)
                         .padding(.bottom)
                 } label: {
-                    Text("Reasoning")
+                    Text("title-reasoning")
                     
                     if message.content.isEmpty {
                         ProgressView()

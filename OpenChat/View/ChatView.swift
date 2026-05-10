@@ -25,9 +25,9 @@ struct ChatView: View {
             
             HStack {
                 @Bindable var viewModel = viewModel
-                TextField("Message", text: $viewModel.currentMessage.content)
+                TextField("hint-message", text: $viewModel.currentMessage.content)
                 
-                AsyncButton(verbatim: "Send") {
+                AsyncButton("action-send") {
                     try await viewModel.sendCurrentMessageStreaming()
                 }
             }
@@ -36,7 +36,7 @@ struct ChatView: View {
         
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
-                Menu(viewModel.chat.model?.label ?? "Select a model") {
+                Menu(viewModel.chat.model?.label ?? .init(localized: "hint-select-model")) {
                     ForEach(models) { model in
                         Button(model.label) {
                             viewModel.setCurrentModel(model)

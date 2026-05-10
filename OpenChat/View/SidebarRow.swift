@@ -18,7 +18,7 @@ struct SidebarRow: View {
         NavigationLink(value: chat) {
 
             TextField(text: $chat.title) {
-                Text(verbatim: "Chat name")
+                Text("hint-chat-name")
             }
             .autocorrectionDisabled(true)
             .focused($isFocused)

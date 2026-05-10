@@ -19,24 +19,24 @@ struct OnboardingView: View {
         
         VStack(spacing: 20) {
             
-            Text("Configure Connection")
+            Text("title-connection")
                 .font(.largeTitle)
             
-            TextField("https://your-openai-url.com", text: $urlString)
+            TextField("hint-connection-url", text: $urlString)
                 .textFieldStyle(.roundedBorder)
                 .autocorrectionDisabled(true)
                 #if !os(macOS)
                 .textInputAutocapitalization(.never)
                 #endif
             
-            SecureField("Your JWT Token or OpenAI token", text: $token)
+            SecureField("hint-connection-token", text: $token)
                 .textFieldStyle(.roundedBorder)
                 .autocorrectionDisabled(true)
                 #if !os(macOS)
                 .textInputAutocapitalization(.never)
                 #endif
             
-            AsyncButton(verbatim: "Continue") {
+            AsyncButton("action-continue") {
                 guard let url = URL(string: urlString) else { return }
                 
                 viewModel.setConfig(.init(

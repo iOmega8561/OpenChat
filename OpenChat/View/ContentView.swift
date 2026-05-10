@@ -39,7 +39,7 @@ struct ContentView: View {
                 }
                 #endif
                 ToolbarItem(placement: .primaryAction) {
-                    Button("New Chat", systemImage: "plus") {
+                    Button("action-new-chat", systemImage: "plus") {
                         selection = viewModel.createChat()
                     }
                 }
@@ -56,7 +56,7 @@ struct ContentView: View {
                         service: .init(config)
                     ))
                 
-            } else { Text("Select a chat") }
+            } else { Text("hint-select-chat") }
             
         }
         .bootstrapTask(handler: viewModel.fetchModels)
