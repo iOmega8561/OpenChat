@@ -22,15 +22,36 @@ struct MessageView: View {
         }
     }
     
+    @ViewBuilder
+    private func alignmentStack<T: View>(_ content: T) -> some View {
+        HStack {
+            if message.role == .assistant {
+                content
+                Spacer()
+            } else {
+                Spacer()
+                content
+                    .padding(12)
+                    .background(Color.gray.opacity(0.2))
+                    .clipShape(.rect(cornerRadius: .bestRadius))
+            }
+        }
+    }
+    
     var body: some View {
         
         VStack(alignment: .leading) {
+            
             if message.role == .assistant,
                !message.reasoning.isEmpty {
+                
                 DisclosureGroup {
-                    markdownText(message.reasoning)
-                        .foregroundStyle(.secondary)
-                        .padding(.bottom)
+                    alignmentStack(
+                        markdownText(message.reasoning)
+                    )
+                    .foregroundStyle(.secondary)
+                    .padding(.bottom, 4)
+                    
                 } label: {
                     Text("title-reasoning")
                     
@@ -43,18 +64,7 @@ struct MessageView: View {
                 }
             }
                         
-            HStack {
-                if message.role == .assistant {
-                    markdownText(message.content)
-                    Spacer()
-                } else {
-                    Spacer()
-                    markdownText(message.content)
-                        .padding(12)
-                        .background(Color.gray.opacity(0.2))
-                        .clipShape(.rect(cornerRadius: .bestRadius))
-                }
-            }
+            alignmentStack(markdownText(message.content))
         }
     }
 }
