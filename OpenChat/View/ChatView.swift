@@ -36,12 +36,18 @@ struct ChatView: View {
         
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
-                Menu(viewModel.chat.model?.id ?? .init(localized: "hint-select-model")) {
+                Menu {
                     ForEach(models) { model in
                         Button(model.id) {
                             viewModel.setCurrentModel(model)
                         }
                     }
+                } label: {
+                    Text(viewModel.chat.model?.id ??
+                        .init(localized: "hint-select-model"))
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                    .frame(maxWidth: 250)
                 }
             }
         }
