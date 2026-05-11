@@ -17,7 +17,7 @@ enum OpenAIError: LocalizedError {
         case 200...299: return
         case 400:       throw OpenAIError.badRequest
         case 401:       throw OpenAIError.unauthorized
-        case 302:
+        case 300...399:
             guard let location = http.value(forHTTPHeaderField: "Location"),
                   let locationURL = URL(string: location) else {
                 fallthrough
