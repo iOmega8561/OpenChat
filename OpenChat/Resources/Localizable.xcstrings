@@ -166,13 +166,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "https://your-openai-url.com"
+            "value" : "https://your-openai-url.com/v1"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "https://url-api-openai.com"
+            "value" : "https://url-api-openai.com/v1"
           }
         }
       }
