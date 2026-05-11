@@ -22,6 +22,8 @@ struct SidebarRow: View {
             }
             .autocorrectionDisabled(true)
             .focused($isFocused)
+            .allowsHitTesting(isFocused)
+            
         }
         .id(chat.id)
         .contextMenu {
