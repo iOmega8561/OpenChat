@@ -7,13 +7,13 @@
 
 import Foundation
 
-nonisolated struct ChatCompletion: OpenAIDecodableBody {
+nonisolated struct ChatCompletion: DecodableBody {
     
-    nonisolated struct Choice: OpenAIDecodableBody {
+    nonisolated struct Choice: DecodableBody {
 
         // With a single struct we can decode both
         // reasoning content and ordinary messages
-        nonisolated struct ChatCompletionMessage: OpenAIDecodableBody {
+        nonisolated struct ChatCompletionMessage: DecodableBody {
             let content: String?
             let reasoning_content: String?
         }

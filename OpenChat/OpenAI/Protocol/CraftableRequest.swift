@@ -1,5 +1,5 @@
 //
-//  OpenAICraftableRequest.swift
+//  CraftableRequest.swift
 //  OpenChat
 //
 //  Created by Giuseppe Rocco on 22/03/26.
@@ -7,9 +7,9 @@
 
 import Foundation
 
-nonisolated protocol OpenAICraftableRequest: Sendable {
+nonisolated protocol CraftableRequest: Sendable {
     
-    associatedtype RequestBody: OpenAIEncodableBody
+    associatedtype RequestBody: EncodableBody
     
     var requestBody: RequestBody? { get }
     
@@ -21,12 +21,12 @@ nonisolated protocol OpenAICraftableRequest: Sendable {
     
     var urlParameter: String? { get }
     
-    func build(for config: OpenAIConfiguration) throws -> URLRequest
+    func build(for config: ConnectionConfig) throws -> URLRequest
 }
 
-nonisolated extension OpenAICraftableRequest {
+nonisolated extension CraftableRequest {
     
-    func build(for config: OpenAIConfiguration) throws -> URLRequest {
+    func build(for config: ConnectionConfig) throws -> URLRequest {
         
         var url = config.baseURL.appendingPathComponent(self.apiResourcePath)
         

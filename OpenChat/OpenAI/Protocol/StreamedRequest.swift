@@ -1,5 +1,5 @@
 //
-//  OpenAIStreamedRequest.swift
+//  StreamedRequest.swift
 //  OpenChat
 //
 //  Created by Giuseppe Rocco on 25/04/2026.
@@ -7,19 +7,19 @@
 
 import Foundation
 
-nonisolated protocol OpenAIStreamedRequest: OpenAICraftableRequest {
+nonisolated protocol StreamedRequest: CraftableRequest {
     
-    associatedtype ResponseBody: OpenAIDecodableBody
+    associatedtype ResponseBody: DecodableBody
     
     associatedtype ResponseAsyncSequenceType: AsyncSequence
     
     func stream(
-        from config: OpenAIConfiguration,
+        from config: ConnectionConfig,
         using session: URLSession
     ) async throws -> ResponseAsyncSequenceType
 }
 
-nonisolated extension OpenAIStreamedRequest {
+nonisolated extension StreamedRequest {
     
     typealias ResponseAsyncSequence = AsyncThrowingCompactMapSequence<
         AsyncPrefixWhileSequence<
@@ -28,7 +28,7 @@ nonisolated extension OpenAIStreamedRequest {
     >
     
     func stream(
-        from config: OpenAIConfiguration,
+        from config: ConnectionConfig,
         using session: URLSession
     ) async throws -> ResponseAsyncSequence {
         
@@ -36,7 +36,9 @@ nonisolated extension OpenAIStreamedRequest {
             for: self.build(for: config)
         )
         
-        try OpenAIError.detectError(from: response)
+        if let error: HTTPError = .init(from: response) {
+            throw error
+        }
         
         let decoder = JSONDecoder()
 

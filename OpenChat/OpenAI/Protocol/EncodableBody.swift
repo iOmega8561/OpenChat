@@ -1,5 +1,5 @@
 //
-//  OpenAIEncodableBody.swift
+//  EncodableBody.swift
 //  OpenChat
 //
 //  Created by Giuseppe Rocco on 24/03/26.
@@ -7,4 +7,4 @@
 
 import Foundation
 
-typealias OpenAIEncodableBody = Encodable & Sendable
+typealias EncodableBody = Encodable & Sendable

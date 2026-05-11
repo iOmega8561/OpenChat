@@ -12,11 +12,11 @@ import Observation
 final class AppViewModel {
     
     private(set) var appMode: AppMode = .setup()
-    private(set) var config: OpenAIConfiguration?
+    private(set) var config: ConnectionConfig?
     private(set) var models: [Model] = []
     private(set) var chats: [Chat] = []
                 
-    func setConfig(_ config: OpenAIConfiguration) {
+    func setConfig(_ config: ConnectionConfig) {
         self.config = config
     }
     
@@ -42,7 +42,7 @@ final class AppViewModel {
         do {
             try await fetchModels()
             appMode = .ready
-        } catch let error as OpenAIError {
+        } catch let error as HTTPError {
             switch error {
             case .location(let url):
                 appMode = .setup(loginAt: url)

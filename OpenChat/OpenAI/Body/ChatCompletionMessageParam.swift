@@ -7,7 +7,7 @@
 
 import Foundation
 
-nonisolated struct ChatCompletionMessageParam: OpenAIEncodableBody {
+nonisolated struct ChatCompletionMessageParam: EncodableBody {
     let content: String
     let role: String
 }

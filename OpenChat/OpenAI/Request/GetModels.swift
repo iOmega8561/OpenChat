@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct GetModels: OpenAIUnaryRequest {
+struct GetModels: UnaryRequest {
     
     typealias RequestBody = GenericEmptyBody
     

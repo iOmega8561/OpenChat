@@ -7,6 +7,6 @@
 
 import Foundation
 
-nonisolated struct Models: OpenAIDecodableBody {
+nonisolated struct Models: DecodableBody {
     let data: [Model]
 }

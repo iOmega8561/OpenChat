@@ -1,5 +1,5 @@
 //
-//  OpenAIService.swift
+//  OpenChatService.swift
 //  OpenChat
 //
 //  Created by Giuseppe Rocco on 22/03/26.
@@ -9,7 +9,7 @@ import Foundation
 
 struct OpenChatService: Sendable {
     
-    private let config: OpenAIConfiguration
+    private let config: ConnectionConfig
     
     private let session = SessionManager.shared.session
     
@@ -31,10 +31,12 @@ struct OpenChatService: Sendable {
             stream: false
         )
         
-        let response = try await CreateChatCompletion(requestBody: body).perform(on: config, using: session)
+        let response = try await CreateChatCompletion(
+            requestBody: body
+        ).perform(on: config, using: session)
         
         guard let messageContent = response.choices.first?.message?.content else {
-            throw OpenAIError.invalidResponse
+            throw HTTPError.invalidResponse
         }
         
         return Message(role: .assistant, content: messageContent)
@@ -57,5 +59,5 @@ struct OpenChatService: Sendable {
             }
     }
     
-    init(_ config: OpenAIConfiguration) { self.config = config }
+    init(_ config: ConnectionConfig) { self.config = config }
 }
