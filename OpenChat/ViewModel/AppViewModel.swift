@@ -33,7 +33,7 @@ final class AppViewModel {
     func fetchModels() async throws {
         guard let config else { return }
         
-        self.models = try await OpenAIService(config).fetchModels()
+        self.models = try await OpenChatService(config).fetchModels()
     }
     
     func initiateAuthFlow() async throws {

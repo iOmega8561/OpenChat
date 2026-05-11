@@ -2,7 +2,7 @@
 //  HTTPContentType.swift
 //  OpenChat
 //
-//  Created by Giuseppe Rocco on 27/04/2026.
+//  Created by Giuseppe Rocco on 25/04/2026.
 //
 
 import Foundation

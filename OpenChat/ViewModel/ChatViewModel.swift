@@ -11,7 +11,7 @@ import Observation
 @MainActor @Observable
 final class ChatViewModel {
     
-    private let service: OpenAIService
+    private let service: OpenChatService
     
     private(set) var chat: Chat
     
@@ -54,7 +54,7 @@ final class ChatViewModel {
         var assistantMessage = Message(role: .assistant, content: "")
         chat.messages.append(assistantMessage)
         
-        typealias Chunk = ChatCompletion.ResponseBodyType.Choice.MessageChunk
+        typealias Chunk = ChatCompletion.Choice.ChatCompletionMessage
         for try await case let chunk as Chunk in stream {
             assistantMessage.reasoning += chunk.reasoning_content ?? ""
             assistantMessage.content += chunk.content ?? ""
@@ -65,7 +65,7 @@ final class ChatViewModel {
         }
     }
     
-    init(chat: Chat, service: OpenAIService) {
+    init(chat: Chat, service: OpenChatService) {
         self.chat = chat
         self.service = service
     }
