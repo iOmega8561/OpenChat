@@ -8,5 +8,12 @@
 import Foundation
 
 nonisolated struct Models: DecodableBody {
+    
+    nonisolated struct Model: DecodableBody {
+        let id: String
+        let created: Date
+        let owned_by: String
+    }
+    
     let data: [Model]
 }

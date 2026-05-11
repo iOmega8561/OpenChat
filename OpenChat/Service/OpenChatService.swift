@@ -18,8 +18,8 @@ struct OpenChatService: Sendable {
             on: config,
             using: session
         )
-        
-        return response.data
+
+        return response.data.map { .init(id: $0.id) }
     }
     
     func sendChat(messages: [Message], model: Model) async throws -> Message {
