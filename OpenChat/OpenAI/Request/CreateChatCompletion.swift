@@ -9,7 +9,7 @@ import Foundation
 
 struct CreateChatCompletion: OpenAIStreamedRequest, OpenAIUnaryRequest {
     
-    struct RequestBody: Encodable, Sendable {
+    struct RequestBody: OpenAIEncodableBody {
         let model: String
         let messages: [ChatCompletionMessageParam]
         let stream: Bool

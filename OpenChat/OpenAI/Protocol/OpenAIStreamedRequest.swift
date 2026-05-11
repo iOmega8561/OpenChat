@@ -9,7 +9,7 @@ import Foundation
 
 nonisolated protocol OpenAIStreamedRequest: OpenAICraftableRequest {
     
-    associatedtype ResponseBody: Decodable & Sendable
+    associatedtype ResponseBody: OpenAIDecodableBody
     
     associatedtype ResponseAsyncSequenceType: AsyncSequence
     

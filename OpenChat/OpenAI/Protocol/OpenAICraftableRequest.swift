@@ -9,7 +9,7 @@ import Foundation
 
 nonisolated protocol OpenAICraftableRequest: Sendable {
     
-    associatedtype RequestBody: Encodable & Sendable
+    associatedtype RequestBody: OpenAIEncodableBody
     
     var requestBody: RequestBody? { get }
     

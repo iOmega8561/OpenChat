@@ -9,7 +9,7 @@ import Foundation
 
 nonisolated protocol OpenAIUnaryRequest: OpenAICraftableRequest {
     
-    associatedtype ResponseBody: Decodable & Sendable
+    associatedtype ResponseBody: OpenAIDecodableBody
     
     func perform(
         on config: OpenAIConfiguration,
