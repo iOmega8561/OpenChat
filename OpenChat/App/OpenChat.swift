@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct OpenChat: App {
@@ -22,6 +23,10 @@ struct OpenChat: App {
                     #if os(macOS)
                     .frame(minWidth: 500, minHeight: 450)
                     #endif
+                    .modelContainer(
+                        for: Chat.self,
+                        isAutosaveEnabled: true
+                    )
                 
             case .setup(let loginURL):
                 

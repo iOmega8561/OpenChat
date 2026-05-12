@@ -6,8 +6,10 @@
 //
 
 import Foundation
+import SwiftData
 
-struct Message: Identifiable, Codable, Hashable {
+@Model
+final class Message: Identifiable {
     
     enum Role: String, Codable {
         case system
@@ -16,16 +18,19 @@ struct Message: Identifiable, Codable, Hashable {
         case assistant
     }
     
-    let id: UUID
-    let role: Role
+    @Attribute(.unique)
+    private(set) var id: UUID
+    private(set) var chat: Chat?
+    private(set) var createdAt: Date
+    private(set) var role: Role
+    
     var content: String
     var reasoning: String
-    let createdAt: Date
     
     init(
         id: UUID = UUID(),
         role: Role,
-        content: String,
+        content: String = "",
         reasoning: String = "",
         createdAt: Date = .now
     ) {

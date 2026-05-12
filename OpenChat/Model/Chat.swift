@@ -7,14 +7,19 @@
 
 import Foundation
 
-@Observable
+import SwiftData
+
+@Model
 final class Chat: Identifiable {
     
-    let id: UUID
-    var title: String
+    @Attribute(.unique)
+    private(set) var id: UUID
+    private(set) var createdAt: Date
+    
+    @Relationship(deleteRule: .cascade, inverse: \Message.chat)
     var messages: [Message]
-    var createdAt: Date
     var model: Model?
+    var title: String
     
     init(
         id: UUID = UUID(),
@@ -26,30 +31,5 @@ final class Chat: Identifiable {
         self.title = title
         self.messages = messages
         self.createdAt = createdAt
-    }
-}
-
-extension Chat: Codable {
-    
-    enum CodingKeys: String, CodingKey {
-        case id
-        case _title
-        case _messages
-        case _createdAt
-        case _model
-    }
-}
-
-extension Chat: Equatable {
-    
-    static func == (lhs: Chat, rhs: Chat) -> Bool {
-        lhs.id == rhs.id
-    }
-}
-
-extension Chat: Hashable {
-    
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
     }
 }
