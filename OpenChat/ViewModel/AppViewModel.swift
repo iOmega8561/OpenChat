@@ -14,20 +14,9 @@ final class AppViewModel {
     private(set) var appMode: AppMode = .setup()
     private(set) var config: ConnectionConfig?
     private(set) var models: [Model] = []
-    private(set) var chats: [Chat] = []
                 
     func setConfig(_ config: ConnectionConfig) {
         self.config = config
-    }
-    
-    func createChat() -> Chat {
-        let newChat = Chat()
-        chats.insert(newChat, at: 0)
-        return newChat
-    }
-    
-    func deleteChats(at offsets: IndexSet) {
-        chats.remove(atOffsets: offsets)
     }
     
     func fetchModels() async throws {
@@ -48,6 +37,28 @@ final class AppViewModel {
                 appMode = .setup(loginAt: url)
             default: throw error
             }
+        }
+    }
+    
+    func chatCompletion(streaming chat: Chat) async throws {
+        guard let config,
+              let model = chat.model else { return }
+        
+        let stream = try await OpenChatService(config).streamChat(
+            messages: chat.messages,
+            model: model
+        )
+        
+        chat.messages.append(Message(role: .assistant, content: ""))
+        let targetIndex = chat.messages.index(before: chat.messages.endIndex)
+        
+        for try await chunk in stream {
+            
+            guard let delta = chunk as? ChatCompletion.Choice.ChatCompletionMessage
+            else { continue }
+            
+            chat.messages[targetIndex].reasoning += delta.reasoning_content ?? ""
+            chat.messages[targetIndex].content += delta.content ?? ""
         }
     }
 }

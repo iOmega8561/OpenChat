@@ -9,26 +9,44 @@ import Tools4SwiftUI
 
 struct ChatView: View {
     
-    @Environment(ChatViewModel.self) private var viewModel
+    @Environment(AppViewModel.self)
+    private var viewModel
     
-    let models: [Model]
+    @Environment(Chat.self)
+    private var chat
+    
+    @State
+    private var currentMsg: String = ""
+    
+    private var sortedMessages: [Message] {
+        chat.messages.sorted(by: { $0.createdAt < $1.createdAt })
+    }
     
     var body: some View {
 
         VStack {
             ScrollView {
-                ForEach(viewModel.chat.messages) { message in
+                ForEach(sortedMessages) { message in
                     MessageView(message: message)
                 }
                 .padding()
             }
             
             HStack {
-                @Bindable var viewModel = viewModel
-                TextField("hint-message", text: $viewModel.currentMessage.content)
+                TextField("hint-message", text: $currentMsg)
                 
                 AsyncButton("action-send") {
-                    try await viewModel.sendCurrentMessageStreaming()
+                    guard !currentMsg.isEmpty,
+                          chat.model != nil else { return }
+                    
+                    chat.messages.append(.init(
+                        role: .user,
+                        content: currentMsg
+                    ))
+                    
+                    currentMsg = ""
+                    
+                    try await viewModel.chatCompletion(streaming: chat)
                 }
             }
             .padding()
@@ -37,13 +55,13 @@ struct ChatView: View {
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Menu {
-                    ForEach(models) { model in
+                    ForEach(viewModel.models) { model in
                         Button(model.id) {
-                            viewModel.setCurrentModel(model)
+                            chat.model = model
                         }
                     }
                 } label: {
-                    Text(viewModel.chat.model?.id ??
+                    Text(chat.model?.id ??
                         .init(localized: "hint-select-model"))
                     .lineLimit(1)
                     .truncationMode(.middle)
@@ -52,9 +70,9 @@ struct ChatView: View {
             }
         }
         #if os(macOS)
-        .navigationSubtitle(viewModel.chat.title)
+        .navigationSubtitle(chat.title)
         #else
-        .navigationTitle(viewModel.chat.title)
+        .navigationTitle(chat.title)
         #endif
     }
 }

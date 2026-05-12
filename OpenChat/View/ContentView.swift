@@ -6,17 +6,23 @@
 //
 
 import Tools4SwiftUI
+import SwiftData
 
 struct ContentView: View {
     
     @Environment(AppViewModel.self) private var viewModel
+    @Environment(\.modelContext) private var context
     
     @State private var selection: Chat? = nil
     @State private var searchQuery: String = ""
     
+    @Query(sort: \Chat.createdAt, order: .forward)
+    private var chats: [Chat]
+    
     private var filteredChats: [Chat] {
-        searchQuery.isEmpty ? viewModel.chats :
-                              viewModel.chats.filter { $0.title.localizedStandardContains(searchQuery) }
+        chats.filter {
+            $0.title.localizedStandardContains(searchQuery) || searchQuery.isEmpty
+        }
     }
     
     var body: some View {
@@ -28,7 +34,9 @@ struct ContentView: View {
             
                     SidebarRow(chat: chat)
                 }
-                .onDelete(perform: viewModel.deleteChats)
+                .onDelete { offsets in
+                    offsets.forEach { context.delete(chats[$0]) }
+                }
             }
             .searchable(text: $searchQuery, placement: .sidebar)
             
@@ -40,21 +48,20 @@ struct ContentView: View {
                 #endif
                 ToolbarItem(placement: .primaryAction) {
                     Button("action-new-chat", systemImage: "plus") {
-                        selection = viewModel.createChat()
+                        let newChat = Chat()
+                        context.insert(newChat)
+                        selection = newChat
                     }
                 }
             }
         } detail: {
             
-            if let config = viewModel.config,
-               let chat = selection {
+            if let chat = selection {
                 
-                ChatView(models: viewModel.models)
+                ChatView()
                     .id(chat.id)
-                    .environment(ChatViewModel(
-                        chat: chat,
-                        service: .init(config)
-                    ))
+                    .environment(chat)
+                    .environment(viewModel)
                 
             } else { Text("hint-select-chat") }
             
