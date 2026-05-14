@@ -10,8 +10,11 @@ import Tools4SwiftUI
 struct OnboardingView: View {
     @Environment(ViewModel.self) private var viewModel
     
-    @State private var urlString: String = ""
-    @State private var token: String = ""
+    @StateDefault(key: "urlString", defaultValue: "")
+    private var urlString: String
+    
+    @StateDefault(key: "token", defaultValue: "")
+    private var token: String
         
     let webLoginURL: URL?
     
