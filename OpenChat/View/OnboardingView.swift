@@ -8,7 +8,7 @@
 import Tools4SwiftUI
 
 struct OnboardingView: View {
-    @Environment(AppViewModel.self) private var viewModel
+    @Environment(ViewModel.self) private var viewModel
     
     @State private var urlString: String = ""
     @State private var token: String = ""

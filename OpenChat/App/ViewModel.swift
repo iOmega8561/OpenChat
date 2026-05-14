@@ -1,5 +1,5 @@
 //
-//  AppViewModel.swift
+//  ViewModel.swift
 //  OpenChat
 //
 //  Created by Giuseppe Rocco on 22/03/26.
@@ -9,7 +9,7 @@ import SwiftUI
 import Observation
 
 @MainActor @Observable
-final class AppViewModel {
+final class ViewModel {
     
     private(set) var appMode: AppMode = .setup()
     private(set) var config: ConnectionConfig?

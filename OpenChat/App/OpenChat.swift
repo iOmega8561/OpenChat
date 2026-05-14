@@ -10,7 +10,7 @@ import SwiftData
 
 @main
 struct OpenChat: App {
-    @State private var viewModel = AppViewModel()
+    @State private var viewModel = ViewModel()
     
     var body: some Scene {
         WindowGroup {

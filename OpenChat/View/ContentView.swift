@@ -10,7 +10,7 @@ import SwiftData
 
 struct ContentView: View {
     
-    @Environment(AppViewModel.self) private var viewModel
+    @Environment(ViewModel.self) private var viewModel
     @Environment(\.modelContext) private var context
     
     @State private var selection: Chat? = nil

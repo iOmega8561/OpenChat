@@ -16,7 +16,7 @@ private typealias ViewRepresentable = UIViewRepresentable
 
 struct WebLoginView: ViewRepresentable {
     
-    @Environment(AppViewModel.self) var viewModel
+    @Environment(ViewModel.self) var viewModel
     
     let url: URL?
     

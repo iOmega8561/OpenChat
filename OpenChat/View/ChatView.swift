@@ -9,7 +9,7 @@ import Tools4SwiftUI
 
 struct ChatView: View {
     
-    @Environment(AppViewModel.self)
+    @Environment(ViewModel.self)
     private var viewModel
     
     @Environment(Chat.self)
