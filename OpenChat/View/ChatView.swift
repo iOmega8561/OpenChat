@@ -35,7 +35,7 @@ struct ChatView: View {
             HStack {
                 TextField("hint-message", text: $currentMsg)
                 
-                AsyncButton("action-send") {
+                AsyncButton("action-send", allowsCancel: true) {
                     guard !currentMsg.isEmpty,
                           chat.model != nil else { return }
                     
@@ -50,6 +50,8 @@ struct ChatView: View {
                 }
             }
             .padding()
+            .textFieldStyle(.roundedBorder)
+            .buttonStyle(.borderedProminent)
         }
         
         .toolbar {
