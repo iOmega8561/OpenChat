@@ -6,6 +6,7 @@
 //
 
 import Tools4SwiftUI
+import SwiftUI
 
 struct ChatView: View {
     
